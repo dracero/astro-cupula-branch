@@ -1,9 +1,10 @@
-// i need to importo useThree to adjust the camera position
 import * as THREE from "three";
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useGLTF, useAnimations, OrbitControls, PerspectiveCamera } from "@react-three/drei";
-import { DomeObject } from "./objects/DomeObject";
+import { DomeObject } from "../objects/DomeObject";
+import { useFrame } from "@react-three/fiber";
 
+const DOME_GLB = 'cupula_jml-test.glb'
 
 export const DomeCanvas = (props) => {
   const w = window as any // For debugging
@@ -11,7 +12,7 @@ export const DomeCanvas = (props) => {
   const cameraRef = useRef<THREE.PerspectiveCamera>();
   const controlsRef = useRef();
   
-  const gltf = useGLTF("cupula_new.glb");
+  const gltf = useGLTF(DOME_GLB);
   const dome = w.dome = new DomeObject(gltf.scene);
   const { actions } = useAnimations(gltf.animations, dome);
 
@@ -20,6 +21,10 @@ export const DomeCanvas = (props) => {
     w.mov = actions["movimiento"]
   });
 
+  useFrame(() => {
+    dome.update()
+  })
+
   return (
     <>
       {/* GLB content */}
@@ -27,8 +32,7 @@ export const DomeCanvas = (props) => {
 
       {/* Custom stuff we add to the scene */}
       <group>
-        <primitive object={new THREE.AxesHelper(50)} />
-        <primitive object={new THREE.GridHelper(100, 10)} />
+        <primitive object={new THREE.GridHelper(50, 10)} position={[0,-0.01,0]} />
       </group>
 
       {/* Mouse controls */}
@@ -37,8 +41,8 @@ export const DomeCanvas = (props) => {
       <PerspectiveCamera ref={cameraRef} makeDefault position={[25, 25, 50]} />
 
       {/* Some custom lighting */}
-      <ambientLight />
-      <pointLight position={[50, 50, 50]} />
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} intensity={1} color={0xffffff} />
     </>
   );
 };

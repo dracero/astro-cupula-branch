@@ -1,14 +1,13 @@
 import { DomeCanvas } from "./DomeCanvas";
-import { Canvas } from "@react-three/fiber";
-import Move from "./Move";
+import { ThreeCanvas } from "./ThreeCanvas";
 
 const App = () => {
   return (
-    <div className="boardCanvas" style={{ width: "100vw", height: "100vw" }}>
-      <Canvas>
-        <DomeCanvas></DomeCanvas>
-      </Canvas>
-    </div>
+    <>
+    <ThreeCanvas>
+      <DomeCanvas/>
+    </ThreeCanvas>
+    </>
   );
 };
 
