@@ -17,7 +17,7 @@ export type InstantValues = {
   time: number;
   position: THREE.Vector2;
   velocity: THREE.Vector2;
-  normalForce: THREE.Vector2;
+  contactForce: THREE.Vector2;
   frictionForce: THREE.Vector2;
 };
 
@@ -49,7 +49,7 @@ export class SphereDomeModel {
           time,
           position: linearMap(p, prev.position, next.position),
           velocity: linearMap(p, prev.velocity, next.velocity),
-          normalForce: linearMap(p, prev.normalForce, next.normalForce),
+          contactForce: linearMap(p, prev.contactForce, next.contactForce),
           frictionForce: linearMap(p, prev.frictionForce, next.frictionForce),
         };
       }
@@ -90,7 +90,7 @@ export class SphereDomeModel {
         time,
         position: position.clone(),
         velocity: velocity.clone(),
-        normalForce: N.clone(),
+        contactForce: N.clone(),
         frictionForce: Froz.clone(),
       };
 

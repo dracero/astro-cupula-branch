@@ -3,6 +3,7 @@ import type { InstantValues } from "../models/SphereDomeModel";
 
 export class DomeModelDiagrams extends THREE.Group {
   private sphereLine: THREE.Line<THREE.BufferGeometry, THREE.Material>;
+  private contactArrow: THREE.ArrowHelper;
   private angleArc: THREE.Line<THREE.BufferGeometry, THREE.Material>;
 
   private weightSpan: HTMLSpanElement;
@@ -26,6 +27,12 @@ export class DomeModelDiagrams extends THREE.Group {
     this.sphereLine.renderOrder = 1;
     this.add(this.sphereLine);
 
+    // Contact (normal) force
+    this.contactArrow = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(), 2, 0xff00ff);
+    (this.contactArrow.line.material as THREE.Material).depthTest = false;
+    (this.contactArrow.cone.material as THREE.Material).depthTest = false;
+    this.add(this.contactArrow);
+
     // Angle arc
     this.angleArc = new THREE.Line();
     this.angleArc.material.depthTest = false;
@@ -41,7 +48,7 @@ export class DomeModelDiagrams extends THREE.Group {
 
   update(values: InstantValues) {
     const { PI, atan } = Math;
-    const { position } = values;
+    const { position, contactForce } = values;
 
     // Line to sphere
     const lineAttr = this.sphereLine.geometry.getAttribute("position");
@@ -55,5 +62,15 @@ export class DomeModelDiagrams extends THREE.Group {
     this.angleArc.geometry.setFromPoints(arc.getPoints(16));
 
     this.thetaSpan.innerText = `θ = ${theta.toFixed(2)}`;
+
+    // Contact arrow
+    const contactDir = new THREE.Vector3(contactForce.x, contactForce.y, 0).normalize();
+    if (contactDir.lengthSq() == 0) {
+      this.contactArrow.visible = false;
+    } else {
+      this.contactArrow.visible = true;
+      this.contactArrow.setDirection(contactDir);
+      this.contactArrow.position.set(position.x, position.y, 0);
+    }
   }
 }
