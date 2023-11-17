@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
-export type DatEventType = 'datgui-togglePlay' | 'datgui-speed'
+type DatEventType = 'datgui-togglePlay' | 'datgui-speed' | 'datgui-2D'
 
-export class DatEvent extends Event {
+class DatEvent extends Event {
   value: any;
   constructor(type: DatEventType, properties?: {}) {
     super(type);
@@ -10,9 +10,10 @@ export class DatEvent extends Event {
   }
 }
 
-export const guiOptions = {
+const guiOptions = {
   togglePlay: () => {},
-  speed: 1
+  speed: 1,
+  '2D': false 
 }
 
 export function addDatListener(type: DatEventType, callback: (e: DatEvent) => void) {
@@ -20,7 +21,6 @@ export function addDatListener(type: DatEventType, callback: (e: DatEvent) => vo
 }
 
 export const DatGUI = () => {
-
   useEffect(() => {
     import('dat.gui').then(dat => {
       const gui = new dat.GUI();
@@ -28,7 +28,8 @@ export const DatGUI = () => {
       const dispatcher = (type: DatEventType) => (value: any) => dispatchEvent(new DatEvent(type, { value }))
 
       gui.add(guiOptions, 'togglePlay').name('▶⏸').onChange(dispatcher('datgui-togglePlay'))
-      gui.add(guiOptions, 'speed', 0, 3).onChange(dispatcher('datgui-speed'))
+      gui.add(guiOptions, 'speed', 0, 3).name('Velocidad').onChange(dispatcher('datgui-speed'))
+      gui.add(guiOptions, '2D').onChange(dispatcher('datgui-2D'))
     })
   })
 

@@ -67,10 +67,12 @@ export class DomeModelDiagrams extends THREE.Group {
     const contactDir = new THREE.Vector3(contactForce.x, contactForce.y, 0).normalize();
     if (contactDir.lengthSq() == 0) {
       this.contactArrow.visible = false;
+      this.contactSpan.innerText = "|| N || = 0";
     } else {
       this.contactArrow.visible = true;
       this.contactArrow.setDirection(contactDir);
       this.contactArrow.position.set(position.x, position.y, 0);
+      this.contactSpan.innerText = `|| N || = ${contactForce.length().toFixed(2)}`;
     }
   }
 }

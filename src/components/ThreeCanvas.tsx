@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Clock } from "../utils/Clock";
-import { AnimationsManager } from "../animations/AnimationsManager";
 
 export const ThreeCanvas = (props) => {
   Clock.start()
@@ -9,7 +8,6 @@ export const ThreeCanvas = (props) => {
   function FrameLoop() {
     useFrame(() => {
       Clock.update();
-      AnimationsManager.update()
     })
     return null
   }

@@ -1,12 +1,13 @@
 import * as THREE from "three";
-import { AnimationsManager } from "./AnimationsManager";
 import { SphereDomeModel } from "../models/SphereDomeModel";
-import { addDatListener, type DatEvent, type DatEventType } from "../components/DatGUI";
+import { addDatListener } from "../components/DatGUI";
+import { Clock } from "../utils/Clock";
 
 export class SphereAnimation {
   static readonly name = "sphere-animation";
   static readonly duration = 8; // Seconds
 
+  speed: number = 1;
   mixer: THREE.AnimationMixer;
   action: THREE.AnimationAction;
 
@@ -17,14 +18,21 @@ export class SphereAnimation {
     const clip = new THREE.AnimationClip(SphereAnimation.name, -1, [track]);
     this.mixer = new THREE.AnimationMixer(obj);
     this.action = this.mixer.clipAction(clip);
-    AnimationsManager.add(this.mixer, SphereAnimation.name);
 
-    addDatListener("datgui-speed", (e) => AnimationsManager.edit(SphereAnimation.name, { speed: e.value }));
+    addDatListener("datgui-speed", (e) => (this.speed = e.value));
 
     addDatListener("datgui-togglePlay", () => (this.action.paused = !this.action.paused));
   }
 
+  update() {
+    this.mixer.update(Clock.delta * this.speed);
+  }
+
   get time(): number {
     return this.action.time;
+  }
+
+  get isPlaying(): boolean {
+    return this.action.isRunning();
   }
 }

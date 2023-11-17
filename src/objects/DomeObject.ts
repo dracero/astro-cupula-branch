@@ -48,6 +48,9 @@ export class DomeObject extends THREE.Object3D {
   }
 
   update() {
+    this.animation.update();
+    if (!this.animation.isPlaying) return;
+
     const instant = this.model.getValuesAt(this.animation.time);
     this.diagrams.update(instant);
   }
@@ -55,12 +58,11 @@ export class DomeObject extends THREE.Object3D {
   private initSphere(mesh: THREE.Mesh) {
     this.sphereMesh = mesh;
 
-    const thetaStart = Math.atan(mesh.position.x / mesh.position.y);
     this.model = new SphereDomeModel({
       domeRadius: 10,
       sphereRadius: 1,
       friction: 0,
-      thetaStart,
+      thetaStart: 0.01,
     });
 
     this.animation = new SphereAnimation(mesh, this.model);
