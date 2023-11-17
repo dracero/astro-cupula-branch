@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { SphereAnimation } from "../animations/SphereAnimation";
 import { DomeModelDiagrams } from "./DomeModelDiagrams";
+import { SphereDomeModel } from "../models/SphereDomeModel";
 
 const ObjectsIndex = {
   directionArrow: "tobedefined",
@@ -17,6 +18,7 @@ export class DomeObject extends THREE.Object3D {
 
   private animation: SphereAnimation;
   private diagrams: DomeModelDiagrams;
+  private model: SphereDomeModel;
 
   constructor(scene: THREE.Object3D) {
     super();
@@ -46,13 +48,22 @@ export class DomeObject extends THREE.Object3D {
   }
 
   update() {
-    this.diagrams.update(this.sphereMesh.position);
+    const instant = this.model.getValuesAt(this.animation.time);
+    this.diagrams.update(instant);
   }
 
   private initSphere(mesh: THREE.Mesh) {
     this.sphereMesh = mesh;
 
-    this.animation = new SphereAnimation(mesh);
+    const thetaStart = Math.atan(mesh.position.x / mesh.position.y);
+    this.model = new SphereDomeModel({
+      domeRadius: 10,
+      sphereRadius: 1,
+      friction: 0,
+      thetaStart,
+    });
+
+    this.animation = new SphereAnimation(mesh, this.model);
     this.animation.action.play();
   }
 

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import type { InstantValues } from "../models/SphereDomeModel";
 
 export class DomeModelDiagrams extends THREE.Group {
   private sphereLine: THREE.Line<THREE.BufferGeometry, THREE.Material>;
@@ -38,16 +39,17 @@ export class DomeModelDiagrams extends THREE.Group {
     this.thetaSpan = document.getElementById("theta-value");
   }
 
-  update(spherePos: THREE.Vector3) {
+  update(values: InstantValues) {
     const { PI, atan } = Math;
+    const { position } = values;
 
     // Line to sphere
     const lineAttr = this.sphereLine.geometry.getAttribute("position");
-    lineAttr.setXYZ(1, spherePos.x, spherePos.y, spherePos.z);
+    lineAttr.setXYZ(1, position.x, position.y, 0);
     lineAttr.needsUpdate = true;
 
     // Angle arc
-    let theta = atan(spherePos.x / spherePos.y);
+    let theta = atan(position.x / position.y);
     if (theta < 0) theta = PI + theta;
     const arc = new THREE.ArcCurve(0, 0, 3, PI / 2, PI / 2 - theta, true);
     this.angleArc.geometry.setFromPoints(arc.getPoints(16));

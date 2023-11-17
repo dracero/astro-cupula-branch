@@ -13,12 +13,12 @@ export type SphereDomeModelConditions = {
   friction: number;
 };
 
-type InstantValues = {
+export type InstantValues = {
   time: number;
-  position: THREE.Vec2;
-  velocity: THREE.Vec2;
-  normalForce: THREE.Vec2;
-  frictionForce: THREE.Vec2;
+  position: THREE.Vector2;
+  velocity: THREE.Vector2;
+  normalForce: THREE.Vector2;
+  frictionForce: THREE.Vector2;
 };
 
 export class SphereDomeModel {
@@ -30,6 +30,30 @@ export class SphereDomeModel {
     this.conditions = JSON.parse(JSON.stringify(values));
 
     this.discretize(SphereAnimation.duration, SphereAnimation.duration * 60);
+  }
+
+  getValuesAt(time: number): InstantValues {
+    const count = this.discretizedValues.length;
+
+    if (time < this.discretizedValues[0].time) return this.discretizedValues[0];
+    if (time > this.discretizedValues[count - 1].time) return this.discretizedValues[count - 1];
+
+    const linearMap = (p: number, v1: THREE.Vector2, v2: THREE.Vector2) => v2.clone().sub(v1).multiplyScalar(p).add(v1);
+
+    for (let i = 0; i < count; i++) {
+      const [prev, next] = this.discretizedValues.slice(i, i + 2);
+
+      if (prev.time <= time && time <= next.time) {
+        const p = THREE.MathUtils.mapLinear(time, prev.time, next.time, 0, 1);
+        return {
+          time,
+          position: linearMap(p, prev.position, next.position),
+          velocity: linearMap(p, prev.velocity, next.velocity),
+          normalForce: linearMap(p, prev.normalForce, next.normalForce),
+          frictionForce: linearMap(p, prev.frictionForce, next.frictionForce),
+        };
+      }
+    }
   }
 
   private discretize(maxTime: number, steps: number) {
@@ -64,10 +88,10 @@ export class SphereDomeModel {
 
       const instant: InstantValues = {
         time,
-        position: { x, y },
-        velocity: { x: velocity.x, y: velocity.y },
-        normalForce: { x: N.x, y: N.y },
-        frictionForce: { x: Froz.x, y: Froz.y },
+        position: position.clone(),
+        velocity: velocity.clone(),
+        normalForce: N.clone(),
+        frictionForce: Froz.clone(),
       };
 
       this.discretizedValues.push(instant);

@@ -9,15 +9,7 @@ export class SphereAnimation {
   mixer: THREE.AnimationMixer;
   action: THREE.AnimationAction;
 
-  constructor(obj: THREE.Object3D) {
-    const thetaStart = Math.atan(obj.position.x / obj.position.y);
-    const model = new SphereDomeModel({
-      domeRadius: 10,
-      sphereRadius: 1,
-      friction: 0,
-      thetaStart,
-    });
-
+  constructor(obj: THREE.Object3D, model: SphereDomeModel) {
     const positions = model.discretizedValues.map((values) => [values.position.x, values.position.y, 0]).flat();
     const times = model.discretizedValues.map((values) => values.time);
     const track = new THREE.VectorKeyframeTrack(".position", times, positions);
@@ -25,5 +17,9 @@ export class SphereAnimation {
     this.mixer = new THREE.AnimationMixer(obj);
     this.action = this.mixer.clipAction(clip);
     AnimationsManager.add(this.mixer, SphereAnimation.name);
+  }
+
+  get time(): number {
+    return this.action.time;
   }
 }
