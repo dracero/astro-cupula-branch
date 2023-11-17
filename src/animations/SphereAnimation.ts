@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { AnimationsManager } from "./AnimationsManager";
 import { SphereDomeModel } from "../models/SphereDomeModel";
+import { addDatListener, type DatEvent, type DatEventType } from "../components/DatGUI";
 
 export class SphereAnimation {
   static readonly name = "sphere-animation";
@@ -17,6 +18,10 @@ export class SphereAnimation {
     this.mixer = new THREE.AnimationMixer(obj);
     this.action = this.mixer.clipAction(clip);
     AnimationsManager.add(this.mixer, SphereAnimation.name);
+
+    addDatListener("datgui-speed", (e) => AnimationsManager.edit(SphereAnimation.name, { speed: e.value }));
+
+    addDatListener("datgui-togglePlay", () => (this.action.paused = !this.action.paused));
   }
 
   get time(): number {
