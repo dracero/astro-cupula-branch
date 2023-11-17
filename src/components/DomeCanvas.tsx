@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import { useRef, useEffect } from "react";
-import { useGLTF, useAnimations, OrbitControls, PerspectiveCamera } from "@react-three/drei";
+import { useRef } from "react";
+import { useGLTF, OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { DomeObject } from "../objects/DomeObject";
 import { useFrame } from "@react-three/fiber";
 
@@ -14,12 +14,6 @@ export const DomeCanvas = (props) => {
   
   const gltf = useGLTF(DOME_GLB);
   const dome = w.dome = new DomeObject(gltf.scene);
-  const { actions } = useAnimations(gltf.animations, dome);
-
-  useEffect(() =>  {
-    // actions["movimiento"].play();
-    w.mov = actions["movimiento"]
-  });
 
   useFrame(() => {
     dome.update()
@@ -32,7 +26,7 @@ export const DomeCanvas = (props) => {
 
       {/* Custom stuff we add to the scene */}
       <group>
-        <primitive object={new THREE.GridHelper(50, 10)} position={[0,-0.01,0]} />
+        <primitive object={new THREE.GridHelper(50, 10)} position={[0, 0, 0]} />
       </group>
 
       {/* Mouse controls */}
@@ -42,7 +36,7 @@ export const DomeCanvas = (props) => {
 
       {/* Some custom lighting */}
       <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={1} color={0xffffff} />
+      <pointLight position={[10, 15, 10]} intensity={100} />
     </>
   );
 };

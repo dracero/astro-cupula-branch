@@ -11,11 +11,16 @@ body,
   padding: 0;
 }
 
-body {
-  background: aquamarine;
+.boardCanvas {
+  text-align: center;
 }
 
-.boardCanvas{  
-  text-align: center;  
-  
-  }  
+.text-overlay {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  font-size: 1.4rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+}

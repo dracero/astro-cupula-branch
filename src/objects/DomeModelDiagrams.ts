@@ -4,6 +4,11 @@ export class DomeModelDiagrams extends THREE.Group {
   private sphereLine: THREE.Line<THREE.BufferGeometry, THREE.Material>;
   private angleArc: THREE.Line<THREE.BufferGeometry, THREE.Material>;
 
+  private weightSpan: HTMLSpanElement;
+  private contactSpan: HTMLSpanElement;
+  private frictionSpan: HTMLSpanElement;
+  private thetaSpan: HTMLSpanElement;
+
   constructor() {
     super();
 
@@ -25,6 +30,12 @@ export class DomeModelDiagrams extends THREE.Group {
     this.angleArc.material.depthTest = false;
     this.angleArc.renderOrder = 1;
     this.add(this.angleArc);
+
+    // HTML text boxes
+    this.weightSpan = document.getElementById("weight-force");
+    this.contactSpan = document.getElementById("contact-force");
+    this.frictionSpan = document.getElementById("friction-force");
+    this.thetaSpan = document.getElementById("theta-value");
   }
 
   update(spherePos: THREE.Vector3) {
@@ -40,5 +51,7 @@ export class DomeModelDiagrams extends THREE.Group {
     if (theta < 0) theta = PI + theta;
     const arc = new THREE.ArcCurve(0, 0, 3, PI / 2, PI / 2 - theta, true);
     this.angleArc.geometry.setFromPoints(arc.getPoints(16));
+
+    this.thetaSpan.innerText = `θ = ${theta.toFixed(2)}`;
   }
 }
