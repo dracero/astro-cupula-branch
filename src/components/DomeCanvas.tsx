@@ -1,6 +1,7 @@
 import * as THREE from "three";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGLTF, OrbitControls, PerspectiveCamera, OrthographicCamera } from "@react-three/drei";
+import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import { DomeObject } from "../objects/DomeObject";
 import { useFrame, useThree } from "@react-three/fiber";
 import { addDatListener } from "./DatGUI";
@@ -12,26 +13,26 @@ export const DomeCanvas = (props) => {
   
   const perspectiveCamRef = useRef<THREE.PerspectiveCamera>();
   const orthoCamRef = useRef<THREE.OrthographicCamera>();
+  const [show2d, setShow2d] = useState(false)
   const perspControlsRef = useRef<any>();
   const orthoControlsRef = useRef<any>();
+  
+  const { set: setThree, scene } = useThree()
   
   const gltf = useGLTF(DOME_GLB);
   const dome = w.dome = new DomeObject(gltf.scene);
 
-  const { set: setThree, viewport } = useThree()
+  scene.background = new THREE.Color(0x222233)
+
+  addDatListener('datgui-2D', (e) => {
+    setShow2d(e.value);
+    
+    if (e.value) setThree({ camera: orthoCamRef.current });
+    else setThree({ camera: perspectiveCamRef.current });
+  })
 
   useFrame(() => {
     dome.update()
-  })
-
-  addDatListener('datgui-2D', (e) => {
-    const show2d = e.value;
-    
-    if (show2d) setThree({ camera: orthoCamRef.current });
-    else setThree({ camera: perspectiveCamRef.current });
-
-    perspControlsRef.current.enable = !show2d;
-    orthoControlsRef.current.enable = show2d;
   })
 
   return (
@@ -41,15 +42,15 @@ export const DomeCanvas = (props) => {
 
       {/* Custom stuff we add to the scene */}
       <group>
-        <primitive object={new THREE.GridHelper(50, 10)} position={[0, 0, 0]} />
+        <primitive object={new THREE.GridHelper(50, 30)} position={[0, 0, 0]} />
       </group>
 
       {/* Mouse controls */}
-      <OrbitControls ref={perspControlsRef} camera={perspectiveCamRef.current} />
-      <OrbitControls ref={orthoControlsRef} camera={orthoCamRef.current} enableRotate={false} />
+      <OrbitControls ref={perspControlsRef} camera={perspectiveCamRef.current} enabled={!show2d} />
+      <OrbitControls ref={orthoControlsRef} camera={orthoCamRef.current} enableRotate={false} enabled={show2d} />
 
       <PerspectiveCamera ref={perspectiveCamRef} makeDefault position={[15, 15, 30]} />
-      <OrthographicCamera ref={orthoCamRef} position={[0, 0, 10]} zoom={40} />
+      <OrthographicCamera ref={orthoCamRef} position={[0, 0, 15]} zoom={40} />
 
       {/* Some custom lighting */}
       <ambientLight intensity={0.5} />

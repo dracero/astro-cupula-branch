@@ -1,13 +1,13 @@
 import * as THREE from "three";
 import { SphereDomeModel } from "../models/SphereDomeModel";
-import { addDatListener } from "../components/DatGUI";
+import { addDatListener, guiOptions } from "../components/DatGUI";
 import { Clock } from "../utils/Clock";
 
 export class SphereAnimation {
   static readonly name = "sphere-animation";
   static readonly duration = 8; // Seconds
 
-  speed: number = 1;
+  speed: number = guiOptions.speed;
   mixer: THREE.AnimationMixer;
   action: THREE.AnimationAction;
 

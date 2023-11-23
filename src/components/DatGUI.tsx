@@ -10,7 +10,7 @@ class DatEvent extends Event {
   }
 }
 
-const guiOptions = {
+export const guiOptions = {
   togglePlay: () => {},
   speed: 1,
   '2D': false 

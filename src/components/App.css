@@ -18,9 +18,13 @@ body,
 .text-overlay {
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  margin: 1rem;
+  padding: 0.7rem;
   font-size: 1.4rem;
   position: absolute;
   top: 0;
   left: 0;
+  width: 10rem;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 1rem;
 }
