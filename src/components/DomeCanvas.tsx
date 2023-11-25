@@ -1,7 +1,6 @@
 import * as THREE from "three";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useGLTF, OrbitControls, PerspectiveCamera, OrthographicCamera } from "@react-three/drei";
-import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import { DomeObject } from "../objects/DomeObject";
 import { useFrame, useThree } from "@react-three/fiber";
 import { addDatListener } from "./DatGUI";
@@ -26,9 +25,7 @@ export const DomeCanvas = (props) => {
 
   addDatListener('datgui-2D', (e) => {
     setShow2d(e.value);
-    
-    if (e.value) setThree({ camera: orthoCamRef.current });
-    else setThree({ camera: perspectiveCamRef.current });
+    setThree({ camera: (e.value ? orthoCamRef : perspectiveCamRef).current });
   })
 
   useFrame(() => {
@@ -59,6 +56,6 @@ export const DomeCanvas = (props) => {
   );
 };
 
-useGLTF.preload("cupula_new.glb");
+useGLTF.preload(DOME_GLB);
 
 export default DomeCanvas;

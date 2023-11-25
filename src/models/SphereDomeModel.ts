@@ -1,11 +1,6 @@
 import * as THREE from "three";
 import { SphereAnimation } from "../animations/SphereAnimation";
 
-type DiscretizedValues = {
-  times: number[];
-  positions: THREE.Vec2[];
-};
-
 export type SphereDomeModelConditions = {
   domeRadius: number;
   sphereRadius: number;
@@ -72,7 +67,6 @@ export class SphereDomeModel {
 
     for (let i = 0; i <= steps; i++) {
       const time = (maxTime * i) / steps;
-      const { x, y } = position;
 
       // Calculate forces (without mass)
       const u = new THREE.Vector2(cos(theta), -sin(theta));
