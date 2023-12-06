@@ -1,13 +1,13 @@
 {
   "name": "astro-cupula",
-  "type": "module",
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test-rk4": "npx ts-node --project tsconfig-scripts.json ./scripts/test-rk4.ts"
   },
   "dependencies": {
     "@astrojs/react": "^3.0.4",
@@ -25,6 +25,7 @@
   "devDependencies": {
     "@react-three/drei": "^9.88.11",
     "@react-three/fiber": "^8.15.10",
-    "@types/three": "^0.158.2"
+    "@types/three": "^0.158.2",
+    "ts-node": "^10.9.1"
   }
 }
