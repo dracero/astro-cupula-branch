@@ -12,6 +12,7 @@ export type SphereDomeModelConditions = {
 export type InstantValues = {
   time: number;
   theta?: number;
+  rotation: number;
   position: THREE.Vector2;
   velocity: THREE.Vector2;
   contactForce: THREE.Vector2;
@@ -44,6 +45,7 @@ export class SphereDomeModel {
 
         return {
           time,
+          rotation: lerp(prev.rotation, next.rotation, p),
           theta: lerp(prev.theta, next.theta, p),
           position: prev.position.lerp(next.position, p),
           velocity: prev.velocity.lerp(next.velocity, p),
@@ -73,9 +75,14 @@ export class SphereDomeModel {
       var velocity = polar(speed, -theta);
       const contactForce = polar(g * cos(theta), PI / 2 - theta);
 
+      const newRotation = -((R + r) * theta) / r;
+      var drotation = newRotation - rotation;
+      var rotation = newRotation;
+
       const instant: InstantValues = {
         time,
         theta,
+        rotation,
         position,
         velocity,
         contactForce,
@@ -90,8 +97,11 @@ export class SphereDomeModel {
       const dp = velocity.clone().multiplyScalar(dt);
       position.add(dp);
 
+      rotation += drotation;
+
       this.discretizedValues.push({
         time,
+        rotation,
         position: position.clone(),
         velocity: velocity.clone(),
         contactForce: new THREE.Vector2(),
@@ -100,56 +110,6 @@ export class SphereDomeModel {
 
       const dv = new THREE.Vector2(0, -g).multiplyScalar(dt);
       velocity.add(dv);
-    }
-  }
-
-  private old_discretize(maxTime: number, steps: number) {
-    if (steps < 1) return;
-
-    const { cos, sin, atan, PI } = Math;
-    const polar = (r: number, a: number) => new THREE.Vector2(r * cos(a), r * sin(a));
-    const g = 9.806;
-    const P = new THREE.Vector2(0, -g);
-
-    const { domeRadius: R, sphereRadius: r, friction: mu } = this.conditions;
-    const deltaT = maxTime / steps;
-    let theta = this.conditions.thetaStart;
-    const velocity = new THREE.Vector2(0, 0);
-    const position = polar(R + r, PI / 2 - theta);
-
-    for (let i = 0; i <= steps; i++) {
-      const time = (maxTime * i) / steps;
-
-      // Calculate forces (without mass)
-      const u = new THREE.Vector2(cos(theta), -sin(theta));
-      const v = new THREE.Vector2(sin(theta), cos(theta));
-
-      if (theta < PI / 2) {
-        const Pu = u.clone().multiplyScalar(g * sin(theta));
-        var N = v.clone().multiplyScalar(g * cos(theta));
-        var Froz = u.clone().multiplyScalar(-mu * N.length() * Pu.length());
-      } else {
-        N = Froz = new THREE.Vector2(0, 0);
-      }
-
-      const instant: InstantValues = {
-        time,
-        theta,
-        position: position.clone(),
-        velocity: velocity.clone(),
-        contactForce: N.clone(),
-        frictionForce: Froz.clone(),
-      };
-
-      this.discretizedValues.push(instant);
-
-      // Make the step
-      const acceleration = P.clone().add(N).add(Froz);
-      velocity.add(acceleration.clone().multiplyScalar(deltaT));
-      position.add(velocity.clone().multiplyScalar(deltaT));
-
-      theta = atan(position.x / position.y);
-      if (theta < 0) theta = PI + theta;
     }
   }
 }

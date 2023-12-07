@@ -13,16 +13,20 @@ export class SphereAnimation {
 
   constructor(obj: THREE.Object3D, model: SphereDomeModel) {
     const positions: number[] = [];
+    const rotations: number[] = [];
     const times: number[] = [];
 
+    // TODO: Refactor this O(n^2)
     for (let t = 0; t < SphereAnimation.duration; t += 1 / 30) {
       times.push(t);
       const instant = model.getValuesAt(t);
       positions.push(instant.position.x, instant.position.y, 0);
+      rotations.push(instant.rotation);
     }
 
-    const track = new THREE.VectorKeyframeTrack(".position", times, positions);
-    const clip = new THREE.AnimationClip(SphereAnimation.name, -1, [track]);
+    const positionTrack = new THREE.VectorKeyframeTrack(".position", times, positions);
+    const rotationTrack = new THREE.VectorKeyframeTrack(".rotation[z]", times, rotations);
+    const clip = new THREE.AnimationClip(SphereAnimation.name, -1, [positionTrack, rotationTrack]);
     this.mixer = new THREE.AnimationMixer(obj);
     this.action = this.mixer.clipAction(clip);
 
