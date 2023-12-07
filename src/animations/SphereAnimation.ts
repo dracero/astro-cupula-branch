@@ -5,15 +5,22 @@ import { Clock } from "../utils/Clock";
 
 export class SphereAnimation {
   static readonly name = "sphere-animation";
-  static readonly duration = 8; // Seconds
+  static readonly duration = 3.5; // Seconds
 
   speed: number = guiOptions.speed;
   mixer: THREE.AnimationMixer;
   action: THREE.AnimationAction;
 
   constructor(obj: THREE.Object3D, model: SphereDomeModel) {
-    const positions = model.discretizedValues.map((values) => [values.position.x, values.position.y, 0]).flat();
-    const times = model.discretizedValues.map((values) => values.time);
+    const positions: number[] = [];
+    const times: number[] = [];
+
+    for (let t = 0; t < SphereAnimation.duration; t += 1 / 30) {
+      times.push(t);
+      const instant = model.getValuesAt(t);
+      positions.push(instant.position.x, instant.position.y, 0);
+    }
+
     const track = new THREE.VectorKeyframeTrack(".position", times, positions);
     const clip = new THREE.AnimationClip(SphereAnimation.name, -1, [track]);
     this.mixer = new THREE.AnimationMixer(obj);
