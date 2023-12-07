@@ -22,7 +22,7 @@ export type InstantValues = {
 export class SphereDomeModel {
   conditions: SphereDomeModelConditions;
 
-  private discretizedValues: InstantValues[] = [];
+  discretizedValues: InstantValues[] = [];
 
   constructor(values: SphereDomeModelConditions) {
     this.conditions = JSON.parse(JSON.stringify(values));

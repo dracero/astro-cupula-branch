@@ -16,13 +16,12 @@ export class SphereAnimation {
     const rotations: number[] = [];
     const times: number[] = [];
 
-    // TODO: Refactor this O(n^2)
-    for (let t = 0; t < SphereAnimation.duration; t += 1 / 30) {
-      times.push(t);
-      const instant = model.getValuesAt(t);
-      positions.push(instant.position.x, instant.position.y, 0);
-      rotations.push(instant.rotation);
-    }
+    model.discretizedValues.forEach((instant) => {
+      const { position, rotation, time } = instant;
+      times.push(time);
+      positions.push(position.x, position.y, 0);
+      rotations.push(rotation);
+    });
 
     const positionTrack = new THREE.VectorKeyframeTrack(".position", times, positions);
     const rotationTrack = new THREE.VectorKeyframeTrack(".rotation[z]", times, rotations);
