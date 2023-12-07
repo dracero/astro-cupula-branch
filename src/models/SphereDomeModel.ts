@@ -3,6 +3,7 @@ import { SphereAnimation } from "../animations/SphereAnimation";
 import { RK4, RK4Conditioned } from "../math/runge-kutta";
 
 export type SphereDomeModelConditions = {
+  mass: number;
   domeRadius: number;
   sphereRadius: number;
   thetaStart: number; // Theta is the angle formed by the y+ axis and the position of the sphere relative to the dome's center
@@ -62,7 +63,7 @@ export class SphereDomeModel {
     const { sqrt, sin, cos, acos, PI } = Math;
     const g = 9.806;
     const polar = (r: number, a: number) => new THREE.Vector2(r * cos(a), r * sin(a));
-    const { domeRadius: R, sphereRadius: r, friction: mu, thetaStart: theta0 } = this.conditions;
+    const { domeRadius: R, sphereRadius: r, friction: mu, thetaStart: theta0, mass: m } = this.conditions;
 
     const dTheta = (t: number, theta: number) => 2 * sqrt((5 * g) / (R + r)) * sin(theta / 2);
     const stopCondition = (theta: number, t: number) => theta > acos(10 / 17);
@@ -73,11 +74,14 @@ export class SphereDomeModel {
       const speed = (R + r) * dTheta(time, theta);
       var position = polar(R + r, PI / 2 - theta);
       var velocity = polar(speed, -theta);
-      const contactForce = polar(g * cos(theta), PI / 2 - theta);
+      const contactForce = polar(m * g * cos(theta), PI / 2 - theta);
 
       const newRotation = -((R + r) * theta) / r;
       var drotation = newRotation - rotation;
       var rotation = newRotation;
+
+      const frictionForce = new THREE.Vector2(cos(theta), -sin(theta));
+      frictionForce.multiplyScalar(-mu * contactForce.length() * g * sin(theta));
 
       const instant: InstantValues = {
         time,
@@ -86,7 +90,7 @@ export class SphereDomeModel {
         position,
         velocity,
         contactForce,
-        frictionForce: new THREE.Vector2(),
+        frictionForce,
       };
 
       this.discretizedValues.push(instant);

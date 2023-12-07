@@ -43,7 +43,7 @@ export class DomeObject extends THREE.Object3D {
       }
     });
 
-    this.diagrams = new DomeModelDiagrams();
+    this.diagrams = new DomeModelDiagrams(this.model);
     this.add(this.diagrams);
   }
 
@@ -59,9 +59,10 @@ export class DomeObject extends THREE.Object3D {
     this.sphereMesh = mesh;
 
     this.model = new SphereDomeModel({
+      mass: 1.2,
       domeRadius: 10,
       sphereRadius: 1,
-      friction: 0,
+      friction: 0.1,
       thetaStart: 0.01,
     });
 
