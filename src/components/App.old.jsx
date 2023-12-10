@@ -6,7 +6,7 @@ import { Canvas } from '@react-three/fiber'
 
 const App  = () => {
    
-  //const [ref, api] = useBox(() => ({ mass: 1, position: [0, 5, 0] }))
+  
   return (  
   <div className="boardCanvas"
   style={{ width: "100vw", height: "40vw" }} > 
